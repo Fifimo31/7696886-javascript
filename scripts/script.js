@@ -28,8 +28,10 @@ function afficherResultat(score, nbMotsProposes) {//insérer du texte dans le ht
  * @param {array[string]} listePropositions 
  * @return {number} : le score de l'utilisateur
  */
-const afficherProposition = () => {
+const afficherProposition = (propositions) => {
     
+    let zoneProposition = document.querySelector(".zoneProposition")
+    zoneProposition.innerText = propositions
 }
 
 /**
@@ -44,12 +46,23 @@ function lancerJeu() {
     let monBouton = document.getElementById("btnValiderMot")
     let zoneEcriture = document.getElementById("inputEcriture")
     let i = 0
+    monBouton.desabled = true
+    afficherProposition(listeMots[i])
     monBouton.addEventListener("click", () =>{
         console.log(zoneEcriture.value)
         i++
-        listeMots[i]
+        afficherProposition(listeMots[i])
+        zoneEcriture.value = ""
+        if(listeMots[i] === undefined){
+            afficherProposition("le jeu est fini")
+            monBouton.disabled = true;
+         }else{
+           afficherProposition(listeMots[i]) 
+         }
+        
         
     })
 
     afficherResultat(score, nbMotsProposes)
+    
 }
