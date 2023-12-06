@@ -9,31 +9,35 @@
  * @param {number} score : le score de l'utilisateur
  * @param {number} nbMotsProposes : le nombre de mots proposés à l'utilisateur
  */
-function afficherResultat(score, nbMotsProposes) {//insérer du texte dans le html
-   let zoneScore = document.querySelector(".zoneScore span")
-   let texteScore = `${score} / ${nbMotsProposes}`
-   zoneScore.innerText = texteScore
+function afficherResultat(score, nbMotsProposes) {
+    // Récupération de la zone dans laquelle on va écrire le score
+    let spanScore = document.querySelector(".zoneScore span")
+    // Ecriture du texte
+    let affichageScore = `${score} / ${nbMotsProposes}` 
+    // On place le texte à l'intérieur du span. 
+    spanScore.innerText = affichageScore
 }
 
 /**
- * Cette fonction demande à l'utilisateur de choisir entre "mots" et "phrases" et retourne le choix de l'utilisateur
- * @return {string} : le choix de l'utilisateur, ce choix est nécessairement "mots" ou "phrases
+ * Cette fonction affiche une proposition, que le joueur devra recopier, 
+ * dans la zone "zoneProposition"
+ * @param {string} proposition : la proposition à afficher
  */
-
-
-/**
- * Cette fonction lance la boucle de jeu, c'est à dire qu'elle demande à l'utilisateur de saisir tous les mots
- * contenus dans le tableau listePropositions. A chaque mot saisi, on incrémente le score de l'utilisateur
- * 
- * @param {array[string]} listePropositions 
- * @return {number} : le score de l'utilisateur
- */
-const afficherProposition = (propositions) => {
-    
+function afficherProposition(proposition) {
     let zoneProposition = document.querySelector(".zoneProposition")
-    zoneProposition.innerText = propositions
+    zoneProposition.innerText = proposition
 }
 
+/**
+ * Cette fonction construit et affiche l'email. 
+ * @param {string} nom : le nom du joueur
+ * @param {string} email : l'email de la personne avec qui il veut partager son score
+ * @param {string} score : le score. 
+ */
+function afficherEmail(nom, email, score) {
+    let mailto = `mailto:${email}?subject=Partage du score Azertype&body=Salut, je suis ${nom} et je viens de réaliser le score ${score} sur le site d'Azertype !`
+    location.href = mailto
+}
 
 /**
  * Cette fonction lance le jeu. 
@@ -41,50 +45,70 @@ const afficherProposition = (propositions) => {
  */
 function lancerJeu() {
     // Initialisations
-    
+    initAddEventListenerPopup()
     let score = 0
-    let monBouton = document.getElementById("btnValiderMot")
-    let zoneEcriture = document.getElementById("inputEcriture")
     let i = 0
-    let listePropositions = listeMots
-    monBouton.desabled = true
+    let listeProposition = listeMots
+
+    let btnValiderMot = document.getElementById("btnValiderMot")
+    let inputEcriture = document.getElementById("inputEcriture")
+
+    const form = document.querySelector('form');
     
-    afficherProposition(listePropositions[i])
-    monBouton.addEventListener("click", () =>{
-        console.log(zoneEcriture.value)
-        if(zoneEcriture.value === listePropositions[i]){
+
+    afficherProposition(listeProposition[i])
+
+    // Gestion de l'événement click sur le bouton "valider"
+    btnValiderMot.addEventListener("click", () => {
+        if (inputEcriture.value === listeProposition[i]) {
             score++
         }
         i++
         afficherResultat(score, i)
-        
-        afficherProposition(listePropositions[i])
-        zoneEcriture.value = ""
-        if(listeMots[i] === undefined){
-            afficherProposition("le jeu est fini")
-            monBouton.disabled = true;
-         }else{
-           afficherProposition(listePropositions[i]) 
-         }
-        
-        
+        inputEcriture.value = ''
+        if (listeProposition[i] === undefined) {
+            afficherProposition("Le jeu est fini")
+            btnValiderMot.disabled = true
+        } else {
+            afficherProposition(listeProposition[i])
+        }
     })
 
-    
-    let btnRadio = document.querySelectorAll(".optionSource input")
-    for(let index = 0; index < btnRadio.length; index++){
-        btnRadio[index].addEventListener("change", (e) => {
-            console.log(e.target.value)
-            if (e.target.value === "1"){
-                listePropositions = listeMots
-           }else{
-                listePropositions = listePhrases
-           }
-           afficherProposition(listePropositions[i]) 
+    // Gestion de l'événement change sur les boutons radios. 
+    let listeBtnRadio = document.querySelectorAll(".optionSource input")
+    for (let index = 0; index < listeBtnRadio.length; index++) {
+        listeBtnRadio[index].addEventListener("change", (event) => {
+            // Si c'est le premier élément qui a été modifié, alors nous voulons
+            // jouer avec la listeMots. 
+            if (event.target.value === "1") {
+                listeProposition = listeMots
+            } else {
+                // Sinon nous voulons jouer avec la liste des phrases
+                listeProposition = listePhrases
+            }
+            // Et on modifie l'affichage en direct. 
+            afficherProposition(listeProposition[i])
         })
-       
     }
-   
     
     
+    // Quand on submit
+    form.addEventListener("submit", (event) => {
+        // On empêche le comportement par défaut
+        event.preventDefault();
+        
+        // On récupère les deux champs et on affiche leur valeur
+    const champNom = document.getElementById("nom");
+    nom = champNom.value
+    const champEmail = document.getElementById("email");
+    email = champEmail.value
+    console.log(nom.value);
+    console.log(email.value);
+    let scoreMail = `${score} / ${i}`
+    afficherEmail(nom, email, scoreMail)
+    });
+    
+
+    
+    afficherResultat(score, i)
 }
