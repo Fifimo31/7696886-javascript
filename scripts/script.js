@@ -34,6 +34,7 @@ const afficherProposition = (propositions) => {
     zoneProposition.innerText = propositions
 }
 
+
 /**
  * Cette fonction lance le jeu. 
  * Elle demande à l'utilisateur de choisir entre "mots" et "phrases" et lance la boucle de jeu correspondante
@@ -42,27 +43,48 @@ function lancerJeu() {
     // Initialisations
     
     let score = 0
-    let nbMotsProposes = 0
     let monBouton = document.getElementById("btnValiderMot")
     let zoneEcriture = document.getElementById("inputEcriture")
     let i = 0
+    let listePropositions = listeMots
     monBouton.desabled = true
-    afficherProposition(listeMots[i])
+    
+    afficherProposition(listePropositions[i])
     monBouton.addEventListener("click", () =>{
         console.log(zoneEcriture.value)
+        if(zoneEcriture.value === listePropositions[i]){
+            score++
+        }
         i++
-        afficherProposition(listeMots[i])
+        afficherResultat(score, i)
+        
+        afficherProposition(listePropositions[i])
         zoneEcriture.value = ""
         if(listeMots[i] === undefined){
             afficherProposition("le jeu est fini")
             monBouton.disabled = true;
          }else{
-           afficherProposition(listeMots[i]) 
+           afficherProposition(listePropositions[i]) 
          }
         
         
     })
 
-    afficherResultat(score, nbMotsProposes)
+    
+    let btnRadio = document.querySelectorAll(".optionSource input")
+    for(let index = 0; index < btnRadio.length; index++){
+        btnRadio[index].addEventListener("change", (e) => {
+            console.log(e.target.value)
+            if (e.target.value === "1"){
+                listePropositions = listeMots
+           }else{
+                listePropositions = listePhrases
+           }
+           afficherProposition(listePropositions[i]) 
+        })
+       
+    }
+   
+    
     
 }
