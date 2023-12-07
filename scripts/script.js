@@ -39,24 +39,50 @@ function afficherEmail(nom, email, score) {
     location.href = mailto
 }
 
-const validerNom = (nom) => {
-    if (nom.length >= 2){
-        return true
+/**
+ * Cette fonction prend un nom en paramètre et valide qu'il est au bon format
+ * ici : deux caractères au minimum
+ * @param {string} nom 
+ * @throws {Error}
+ */
+function validerNom(nom) {
+    if (nom.length < 2) {
+        throw new Error("le nom est trop petit")
     }
-        return false
+    
+}
+
+/**
+ * Cette fonction prend un email en paramètre et valide qu'il est au bon format. 
+ * @param {string} email 
+ * @throws {Error}
+ */
+function validerEmail(email) {
+    let emailRegExp = new RegExp("[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z0-9._-]+")
+   
+    if (!emailRegExp.test(email)) {
+        throw new Error("le mail n'est pas valide")
+    }
 
 }
 
+const gererFormulaire = (scoreEmail) => {
 
-const validerEmail = (email) => {
-    let regex = new RegExp("^[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z0-9._-]+");
-    if (regex.test(email)){
-        return true
+    try {
+        let baliseNom = document.getElementById("nom")
+        let nom = baliseNom.value
+        validerNom(nom)
+
+        let baliseEmail = document.getElementById("email")
+        let email = baliseEmail.value
+        validerEmail(email)
+
+    }catch {
+
     }
-        return false
 
+    
 }
-
 
 /**
  * Cette fonction lance le jeu. 
@@ -71,9 +97,6 @@ function lancerJeu() {
 
     let btnValiderMot = document.getElementById("btnValiderMot")
     let inputEcriture = document.getElementById("inputEcriture")
-
-    const form = document.querySelector('form');
-    
 
     afficherProposition(listeProposition[i])
 
@@ -109,35 +132,16 @@ function lancerJeu() {
             afficherProposition(listeProposition[i])
         })
     }
-    
-    
-    // Quand on submit
+
+    // Gestion de l'événement submit sur le formulaire de partage. 
+    let form = document.querySelector("form")
     form.addEventListener("submit", (event) => {
-        // On empêche le comportement par défaut
-        event.preventDefault();
+        event.preventDefault()
+        let scoreEmail = `${score} / ${i}`
+        gererFormulaire(scoreEmail)
         
-        // On récupère les deux champs et on affiche leur valeur
-    const champNom = document.getElementById("nom");
-    let nom = champNom.value
-    const champEmail = document.getElementById("email");
-    let email = champEmail.value
-    validerNom(nom)
+        
+    })
 
-    if(validerNom(nom) && validerEmail(email)){
-        let scoreMail = `${score} / ${i}`
-        afficherEmail(nom, email, scoreMail)
-    }else{
-        console.log("erreur")
-    }
-
-     // On fait la vérification.
-     
-     
-    
-
-    });
-    
-
-    
     afficherResultat(score, i)
 }
