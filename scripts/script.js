@@ -66,6 +66,21 @@ function validerEmail(email) {
 
 }
 
+const afficherMessageErreur = (message) => {
+    
+    let spanErreurMessage = document.getElementById("erreurMessage")
+
+    if(!spanErreurMessage){
+        let popup = document.querySelector(".popup")
+        spanErreurMessage = document.createElement("span")
+        spanErreurMessage.id = "erreurMessage"
+        popup.append(spanErreurMessage)
+    }
+
+    spanErreurMessage.innerText = message
+    
+}
+
 const gererFormulaire = (scoreEmail) => {
 
     try {
@@ -76,9 +91,11 @@ const gererFormulaire = (scoreEmail) => {
         let baliseEmail = document.getElementById("email")
         let email = baliseEmail.value
         validerEmail(email)
+        afficherMessageErreur("")
+        afficherEmail(nom, email, scoreEmail)
 
-    }catch {
-
+    }catch (Erreur) {
+        afficherMessageErreur(Erreur.message)
     }
 
     
